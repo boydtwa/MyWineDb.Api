@@ -1,0 +1,8 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "DbConnectViaKeyVault": "DefaultEndpointsProtocol=https;AccountName=mywinedbstorageact01;AccountKey=9c3KITMpqAkAQqa0+7evs6UAsxvosS44QfRnUnkOfdhr+Pz4GV/gVwRL5nhZvf6oeN1UZhUlLoYVCY1gJNne4A==;EndpointSuffix=core.windows.net"
+  }
+}
