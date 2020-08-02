@@ -1,2 +1,2 @@
 # MyWineDb.Api
-Api for Accessing MyWineDb Data
+A Cloud based Api that uses Azure Fucntions to access Azure Table Storage that supports a mobile application for keeping inventory of my wine collection. But one day I have visions of making the meta data I am collectiong to be a very low cost Wine referenc (free would be nice but I am no business man but in general as close to free as I can make it) for wine collectors to track details of wine their wine over time.
