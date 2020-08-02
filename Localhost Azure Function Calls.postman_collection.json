@@ -1,0 +1,127 @@
+{
+	"info": {
+		"_postman_id": "4ec3045c-0306-4f2b-9285-62205a857fee",
+		"name": "Localhost Azure Function Calls",
+		"description": "A collection of Api calls that run on local host against Azure Table Storeage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetCellars",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "<Your Subscription Key on azure>",
+						"type": "text"
+					},
+					{
+						"key": "Ocp-Apim-Trace",
+						"value": "false",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/GetCellars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"GetCellars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCellarSummaryBottles",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "<your Azure Subscription Key>",
+						"type": "text"
+					},
+					{
+						"key": "Ocp-Apim-Trace",
+						"value": "false",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"PartitionKey\":\"<user email address>\",\"RowKey\":\"<Cellar RowKey>\"}"
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/GetCellarSummaryBottles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"GetCellarSummaryBottles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetCellarBottleDetails",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "<your Azure Subscription Key>",
+						"type": "text"
+					},
+					{
+						"key": "Ocp-Apim-Trace",
+						"value": "false",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"PartitionKey\":\"<email address of user>\",\"RowKey\":\"<Cellar Row Key>-<Winery Row Key>-<key part of Wine RowKey>-<key part of WineBottle RowKey>-<key part of Bottle RowKey>\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/GetCellarBottleDetails",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"GetCellarBottleDetails"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
