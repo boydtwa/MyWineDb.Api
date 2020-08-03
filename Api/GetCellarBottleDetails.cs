@@ -1,28 +1,13 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.Azure.Cosmos.Table;
-using Microsoft.Azure.Cosmos.Table.Queryable;
-using Microsoft.Extensions.Configuration;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.AspNetCore.Mvc.Filters;
 using MyWineDb.Api.Models;
-using System.Collections.Generic;
-using MyWindDb.Api.Models;
-using Microsoft.Azure.Documents.SystemFunctions;
-using System.Linq;
-using System.Globalization;
-using Microsoft.WindowsAzure.Storage;
-using cosmosTable = Microsoft.Azure.Cosmos.Table;
-using Microsoft.VisualBasic.CompilerServices;
-using Microsoft.Azure.Documents;
 using MyWineDb.Api.Services;
+using Newtonsoft.Json;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace MywineDb.Api
 {

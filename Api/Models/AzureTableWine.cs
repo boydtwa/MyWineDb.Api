@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace MyWineDb.Api.Models
@@ -12,8 +10,5 @@ namespace MyWineDb.Api.Models
         public string Color { get; set; }
         public int Vintage { get; set; }
         public DateTime ReleaseDate { get; set; }
-
-
-
     }
 }

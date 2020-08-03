@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MyWineDb.Api.Models
 {
@@ -9,10 +7,5 @@ namespace MyWineDb.Api.Models
         public string Color { get; set; }
         public int TotalBottles { get; set; }
         public IEnumerable<VintageGroup> VintageGroups {get; set;}
-
-        private void CalculateTotalBottles()
-        {
-
-        }
     }
 }

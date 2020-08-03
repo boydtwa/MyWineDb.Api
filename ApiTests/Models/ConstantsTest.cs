@@ -1,18 +1,5 @@
-using NUnit.Framework;
-using MyWindDb.Api;
 using MyWineDb.Api.Models;
-using Microsoft.Azure.Cosmos;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Microsoft.Azure.Cosmos.Table;
-using Microsoft.Azure.Documents.SystemFunctions;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Moq;
+using NUnit.Framework;
 
 namespace MyWindDb.Api.UnitTest.Models
 {

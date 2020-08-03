@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MyWineDb.Api.Models
+﻿namespace MyWineDb.Api.Models
 {
     public class BottleBriefDataModel
     {
@@ -20,7 +16,5 @@ namespace MyWineDb.Api.Models
         public double PricePaid { get; set; }
         public string BarCode { get; set; }
         public bool IsDesert { get; set; }
-
-
     }
 }
