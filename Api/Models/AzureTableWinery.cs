@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Azure.Cosmos.Table;
+﻿using Microsoft.Azure.Cosmos.Table;
 
 namespace MyWineDb.Api.Models
 {
@@ -11,10 +8,8 @@ namespace MyWineDb.Api.Models
 
         // State, Provience etc.
         public string Region { get; set; }
-
         public string Address { get; set; }
         public string Website { get; set; }
         public string GeoCoordinates { get; set; }
-
     }
 }

@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.Azure.Cosmos.Table.Queryable;
-using TableContinuationToken = Microsoft.Azure.Cosmos.Table.TableContinuationToken;
 
 namespace Microsoft.Azure.Cosmos.Table
 {
@@ -18,10 +14,8 @@ namespace Microsoft.Azure.Cosmos.Table
             CancellationToken ct = default(CancellationToken), System.Action<IList<T>> onProgress = null)
                 where T : ITableEntity, new()
         {
-
             var items = new List<T>();
             TableContinuationToken token = null;
-
             do
             {
                 TableQuerySegment<T> seg = await table.ExecuteQuerySegmentedAsync<T>(query, token);

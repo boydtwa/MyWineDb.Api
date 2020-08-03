@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.Azure.Cosmos.Table;
-using Microsoft.OData.Edm;
-using MyWineDb.Api.Models;
 using System.Linq;
 
-namespace MyWindDb.Api.Models
+namespace MyWineDb.Api.Models
 {
     public class BottleDetailModel
     {

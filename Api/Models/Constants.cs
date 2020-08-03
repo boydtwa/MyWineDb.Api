@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Globalization;
-using Microsoft.Azure.Cosmos.Table;
+using System.Linq;
+
 
 namespace MyWineDb.Api.Models
 {

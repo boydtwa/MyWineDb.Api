@@ -1,11 +1,6 @@
-﻿using Microsoft.Azure.Cosmos.Table;
-using MyWindDb.Api.Models;
-using MyWineDb.Api.Models;
-using System;
+﻿using MyWineDb.Api.Models;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-
 
 namespace MyWineDb.Api.Services
 {

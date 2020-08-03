@@ -1,8 +1,4 @@
-﻿using MyWindDb.Api.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace MyWineDb.Api.Models
 {
@@ -19,18 +15,5 @@ namespace MyWineDb.Api.Models
         public ColorGroup  ColorDetail {get; set;}
 
         public IEnumerable<BottleDetailModel> Bottles {get; set;}
-
-
-        //public double PercentFull()
-        //{
-        //    return (Convert.ToDouble(BottleCount()) / Convert.ToDouble(Capacity)) * 100;
-        //}
-
-        //public int BottleCount()
-        //{
-        //    return Bottles == null ? 0 : Bottles.Count();
-        //}
-
-
     }
 }
