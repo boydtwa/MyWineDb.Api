@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "4ec3045c-0306-4f2b-9285-62205a857fee",
-		"name": "Localhost Azure Function Calls",
+		"name": "Localhost Azure Function Calls for MyWineDbApi",
 		"description": "A collection of Api calls that run on local host against Azure Table Storeage",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -117,6 +117,44 @@
 					"path": [
 						"api",
 						"GetCellarBottleDetails"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetInventoryReportData",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Ocp-Apim-Subscription-Key",
+						"value": "<Your Subscription Key on azure>",
+						"type": "text"
+					},
+					{
+						"key": "Ocp-Apim-Trace",
+						"value": "false",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/GetInventoryReportData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"GetInventoryReportData"
 					]
 				}
 			},
