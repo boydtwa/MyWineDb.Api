@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "storage1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Storage/storageAccounts/mywinedbstorageact01",
-      "type": "storage.azure",
-      "connectionId": "AzureWebJobsStorage",
+    "secrets": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/MyWineDbKeyVault01",
+      "type": "secrets.keyVault",
+      "connectionId": "VaultUri",
       "secretStore": "AzureAppSettings"
     }
   }
