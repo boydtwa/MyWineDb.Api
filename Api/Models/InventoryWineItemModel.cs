@@ -9,6 +9,8 @@ namespace MyWineDb.Api.Models
         public int Quantity { get; set; }
         public int Size { get; set; }
         public string WineryName { get; set; }
+        public string Country { get; set; }
+        public string Region { get; set; }
         public string WineName { get; set; }
         public string Color { get; set; }
         public string VarietalType { get; set; }

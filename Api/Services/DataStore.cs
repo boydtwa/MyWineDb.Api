@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
@@ -28,7 +29,7 @@ namespace MyWineDb.Api.Services
             TableClient = storeAccount.CreateCloudTableClient();
             log.LogInformation($"AzureApi Connection Established");
         }
-        public async Task<IList<CellarSummaryModel>>GetCellarList()
+        public async Task<IList<CellarSummaryModel>> GetCellarList()
         {
             var cellars = new List<CellarSummaryModel>();
             var cellarTable = TableClient.GetTableReference("Cellar");
@@ -36,7 +37,7 @@ namespace MyWineDb.Api.Services
             TableQuery<AzureTableCellarModel> query = new TableQuery<AzureTableCellarModel>();
             var cellarsBriefDetail = new List<CellarSummaryModel>();
             var aztCellars = await cellarTable.ExecuteQueryAsync(query);
-            foreach(var aztCellar in aztCellars)
+            foreach (var aztCellar in aztCellars)
             {
                 var cellar = new CellarSummaryModel()
                 {
@@ -61,7 +62,7 @@ namespace MyWineDb.Api.Services
         {
             var Bottles = new List<BottleBriefDataModel>();
             var aztBottles = await GetAzureTableBottlesInCellar(CellarId);
-            foreach(var aztBottle in aztBottles)
+            foreach (var aztBottle in aztBottles)
             {
                 var bottle = new BottleBriefDataModel()
                 {
@@ -83,15 +84,16 @@ namespace MyWineDb.Api.Services
                         bottle.Vintage = aztWine.Vintage;
                         bottle.Color = aztWine.Color;
                         var aztWineSpec = await GetAzureTableWineSpec(bottle.CountryOfOrigin, aztWine.RowKey);
-                        if(aztWineSpec != null)
+                        if (aztWineSpec != null)
                         {
                             bottle.VarietalType = aztWineSpec.VarietalType;
                             bottle.Color = aztWineSpec.isRose ? "Rose" : bottle.Color;
                             bottle.IsDesert = aztWineSpec.isDessert;
                             var aztWinery = await GetAzureTableWinery(bottle.CountryOfOrigin, aztWineSpec.RowKey);
-                            if(aztWinery != null)
+                            if (aztWinery != null)
                             {
                                 bottle.WineryName = aztWinery.Name;
+                                bottle.Region = aztWinery.Region;
                             }
                         }
                     }
@@ -99,14 +101,14 @@ namespace MyWineDb.Api.Services
 
                 Bottles.Add(bottle);
             }
-
+            Bottles.Sort((x, y) => x.Vintage.CompareTo(y.Vintage));
             return Bottles.AsEnumerable();
         }
 
         public async Task<BottleDetailModel> GetCellarBottleDetails(AzureTableKey BottleId)
         {
             var bottle = new BottleDetailModel();
-            bottle.EntityKeys = new AzureTableEntityKeys() {BottleId = BottleId};
+            bottle.EntityKeys = new AzureTableEntityKeys() { BottleId = BottleId };
             var bottleDetailQuery = new TableQuery<AzureTableBottleModel>().Where(
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, BottleId.RowKey),
@@ -119,107 +121,47 @@ namespace MyWineDb.Api.Services
                 bottle.PricePaid = aztBottle.PricePaid;
                 bottle.CellarDate = aztBottle.CellarDate;
             }
-            var aztWineBottle = await GetAzureTableWineBottle(BottleId);
-            if (aztBottle != null && aztWineBottle != null)
-            {
-                bottle.EntityKeys.WineBottleId = new AzureTableKey() { PartitionKey = aztWineBottle.PartitionKey, RowKey = aztWineBottle.RowKey, TimeStamp = aztWineBottle.Timestamp };
-                bottle.Size = aztWineBottle.Size;
-                bottle.RetailPrice = aztWineBottle.RetailPrice;
-                bottle.UPC = aztWineBottle.UPC;
-                bottle.QuantityProduced = aztWineBottle.QuantityProduced.ToString();
-                bottle.BottleNumber = aztWineBottle.BottleNumber.ToString();
-            }
-            var color = string.Empty;
-            if (bottle.EntityKeys.WineBottleId != null)
-            {
-                var aztWine = await GetAzureTableWine(aztWineBottle.PartitionKey, aztWineBottle.RowKey);
-                if (aztWine != null)
-                {
-                    bottle.EntityKeys.WineId = new AzureTableKey() { PartitionKey = aztWine.PartitionKey, RowKey = aztWine.RowKey, TimeStamp = aztWine.Timestamp };
-                    bottle.WineName = aztWine.Name; ;
-                    bottle.WineProductLine = aztWine.ProductLine;
-                    bottle.Vintage = aztWine.Vintage;
-                    bottle.Color = color = aztWine.Color;
-                    var aztWineSpec = await GetAzureTableWineSpec(aztWine.PartitionKey, aztWine.RowKey);
-                    if (aztWineSpec != null)
-                    {
-                        bottle.WineVarietalType = aztWineSpec.VarietalType;
-                        bottle.Color = aztWineSpec.isRose ? "Rose" : bottle.Color;
-                        bottle.isDessert = aztWineSpec.isDessert;
-                        bottle.isEstate = aztWineSpec.isEstate;
-                        bottle.isRose = aztWineSpec.isRose;
-                        bottle.ResSugar = (aztWineSpec.ResSugar/100).ToString("P");
-                        bottle.AlcPercent = (aztWineSpec.AlcPercent/100).ToString("P");
-                        bottle.WineAppellation = aztWineSpec.Appellation;
 
-                    }
-                }
-            }
-            if(bottle.EntityKeys.WineId != null)
-            { 
-                var aztWinery = await GetAzureTableWinery(bottle.EntityKeys.WineId.PartitionKey, bottle.EntityKeys.WineId.RowKey);
-                if (aztWinery != null)
-                {
-                    bottle.EntityKeys.WineryId = new AzureTableKey() { PartitionKey = aztWinery.PartitionKey, RowKey = aztWinery.RowKey, TimeStamp = aztWinery.Timestamp };
-                    bottle.WineryName = aztWinery.Name;
-                    bottle.WineryRegion = aztWinery.Region;
-                    bottle.WineryAddress = aztWinery.Address;
-                    bottle.WineryGeoCoordinates = aztWinery.GeoCoordinates;
-                }
-            }
-            var wineVarietalDetailsList = new List<WineVarietalDetailModel>();
-            if(!string.IsNullOrEmpty(color) && bottle.EntityKeys.WineId != null)
+            bottle = bottle.CellarDate.CompareTo(System.DateTime.MinValue) > 0 ? await GetBottleDetailsForWineBottle(bottle) : bottle;
+            bottle = bottle.EntityKeys.WineBottleId != null ? await GetBottleDetailsForWine(bottle) : bottle;
+            bottle = bottle.EntityKeys.WineId != null ? await GetBottleDetailsForWinery(bottle) : bottle;
+            bottle = bottle.EntityKeys.WineId != null ? await GetBottleDetailForWineVarietals(bottle) : bottle;
+            if(bottle.VarietalDetails.Count() > 0)
             {
-                //check for varietal info
-                var aztWineVarietals = await GetBottleDetailWineVarietals(color, bottle.EntityKeys.WineId.RowKey);
-                foreach(var aztWineVarietal in aztWineVarietals)
+                foreach (var varietalDetail in bottle.VarietalDetails)
                 {
-                    var aztVarietalKey = aztWineVarietal.RowKey.Substring(aztWineVarietal.RowKey.LastIndexOf("-")+1);
-                    var wineVarietalDetail = new WineVarietalDetailModel()
-                    {
-                        WineVarietalId = new AzureTableKey() { PartitionKey = aztWineVarietal.PartitionKey, RowKey = aztWineVarietal.RowKey, TimeStamp = aztWineVarietal.Timestamp },
-                        Percentage = aztWineVarietal.Percentage,
-                        VarietalName = await GetAzurTableVarietalName(aztWineVarietal.PartitionKey, aztVarietalKey)
-                    };
-                    wineVarietalDetailsList.Add(wineVarietalDetail);
+                    var vvd = await GetDetailsForWineVarietalVineyardVarietal(varietalDetail);
+                    varietalDetail.VineyardDetail = vvd.VineyardDetail;                    
                 }
             }
-            if(wineVarietalDetailsList.Count > 0)
-            {
-                foreach(var item in wineVarietalDetailsList)
-                {
-                    item.VineyardDetail = await GetVinyardVarietalDetail(item.WineVarietalId);                    
-                }
-                bottle.VarietalDetails = wineVarietalDetailsList.AsEnumerable();
-            }
+
+            //Get Details before wine spec because it can change color value to Rose
+            bottle = bottle.EntityKeys.WineId != null ? await GetBottleDetailsForWineSpec(bottle) : bottle;
 
             return bottle;
         }
 
-        private async Task<int>GetCellarBottleCount(AzureTableKey CellarId)
+        private async Task<int> GetCellarBottleCount(AzureTableKey CellarId)
         {
             return (await GetAzureTableBottlesInCellar(CellarId)).Count();
         }
-
-        private async Task<IList<AzureTableWineVarietalModel>> GetBottleDetailWineVarietals(string PartitionKey, string WineIdRowKey)
+        private async Task<IList<AzureTableWineVarietalModel>> GetAzureTableWineVarietals(string Color, string RowKey)
         {
-            return (await TableClient.GetTableReference("WineVarietal").ExecuteQueryAsync(
+            return await TableClient.GetTableReference("WineVarietal").ExecuteQueryAsync(
                 new TableQuery<AzureTableWineVarietalModel>().Where(
                     TableQuery.CombineFilters(
                         TableQuery.CombineFilters(
-                            TableQuery.GenerateFilterCondition("RowKey", 
+                            TableQuery.GenerateFilterCondition("RowKey",
                                 QueryComparisons.GreaterThanOrEqual,
-                                $"{WineIdRowKey}-"),
+                                $"{RowKey}-"),
                             TableOperators.And,
                             TableQuery.GenerateFilterCondition("RowKey",
-                                QueryComparisons.LessThan, $"{WineIdRowKey}~")),
+                                QueryComparisons.LessThan, $"{RowKey}~")),
                         TableOperators.And,
                         TableQuery.GenerateFilterCondition("PartitionKey",
-                            QueryComparisons.Equal, PartitionKey)
+                            QueryComparisons.Equal, Color)
                         )
-                    )
-                )
-            );
+                    ));
         }
 
         private async Task<IEnumerable<AzureTableBottleModel>> GetAzureTableBottlesInCellar(AzureTableKey CellarId)
@@ -302,64 +244,145 @@ namespace MyWineDb.Api.Services
             return result.Count == 0 ? string.Empty : result.First().Name;
         }
 
-        private async Task<VineyardVarietalDetail> GetVinyardVarietalDetail(AzureTableKey WineVarietalId)
+        private async Task<BottleDetailModel> GetBottleDetailsForWineBottle(BottleDetailModel bottle)
         {
-            var vineyardVarietalDetail = new VineyardVarietalDetail();
-            var aztWineVarietalVineyardVariatleTable = await TableClient.GetTableReference("WineVarietalVineyardVarietal").ExecuteQueryAsync(
-                    new TableQuery<AzureTableWineVarietalVineyardVarietalModel>().Where(
-                          TableQuery.CombineFilters(
-                              TableQuery.CombineFilters(
-                                  TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, $"{WineVarietalId.RowKey}-"),
-                                  TableOperators.And,
-                                  TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThan, $"{WineVarietalId.RowKey}-~")
-                                  ),
-                              TableOperators.And,
-                              TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, WineVarietalId.PartitionKey)
-                              )));
+            var aztWineBottle = await GetAzureTableWineBottle(bottle.EntityKeys.BottleId);
 
-            if (aztWineVarietalVineyardVariatleTable.Count > 0)
+            if (aztWineBottle != null)
             {
-                vineyardVarietalDetail.VineyardPercentage = (aztWineVarietalVineyardVariatleTable[0].VineyardPercentage/100).ToString("P");
+                bottle.EntityKeys.WineBottleId = new AzureTableKey() { PartitionKey = aztWineBottle.PartitionKey, RowKey = aztWineBottle.RowKey, TimeStamp = aztWineBottle.Timestamp };
+                bottle.Size = aztWineBottle.Size;
+                bottle.RetailPrice = aztWineBottle.RetailPrice;
+                bottle.UPC = aztWineBottle.UPC;
+                bottle.QuantityProduced = aztWineBottle.QuantityProduced.ToString();
+                bottle.BottleNumber = aztWineBottle.BottleNumber.ToString();
             }
-            else
+            return bottle;
+        }
+
+        private async Task<BottleDetailModel> GetBottleDetailsForWine(BottleDetailModel bottle)
+        {
+            var aztWine = await GetAzureTableWine(bottle.EntityKeys.WineBottleId.PartitionKey, bottle.EntityKeys.WineBottleId.RowKey);
+            if (aztWine != null)
             {
-                return vineyardVarietalDetail;
+                bottle.EntityKeys.WineId = new AzureTableKey() { PartitionKey = aztWine.PartitionKey, RowKey = aztWine.RowKey, TimeStamp = aztWine.Timestamp };
+                bottle.WineName = aztWine.Name; ;
+                bottle.WineProductLine = aztWine.ProductLine;
+                bottle.Vintage = aztWine.Vintage;
+                bottle.Color = aztWine.Color;
+            }
+            return bottle;
+        }
+        private async Task<BottleDetailModel> GetBottleDetailsForWinery(BottleDetailModel bottle)
+        {
+            var aztWinery = await GetAzureTableWinery(bottle.EntityKeys.WineId.PartitionKey, bottle.EntityKeys.WineId.RowKey);
+            if (aztWinery != null)
+            {
+                bottle.EntityKeys.WineryId = new AzureTableKey() { PartitionKey = aztWinery.PartitionKey, RowKey = aztWinery.RowKey, TimeStamp = aztWinery.Timestamp };
+                bottle.WineryName = aztWinery.Name;
+                bottle.WineryRegion = aztWinery.Region;
+                bottle.WineryAddress = aztWinery.Address;
+                bottle.WineryGeoCoordinates = aztWinery.GeoCoordinates;
+            }
+            return bottle;
+        }
+
+        private async Task<WineVarietalDetailModel> GetDetailsForWineVarietalVineyardVarietal(WineVarietalDetailModel WineVarietal)
+        {
+            var vvd = new VineyardVarietalDetail();
+            var wineVarietalVineyardVarietal = (await TableClient.GetTableReference("WineVarietalVineyardVarietal").ExecuteQueryAsync(
+                new TableQuery<AzureTableWineVarietalVineyardVarietalModel>().Where(
+                    TableQuery.CombineFilters(
+                        TableQuery.CombineFilters(
+                            TableQuery.GenerateFilterCondition("RowKey",
+                                QueryComparisons.GreaterThanOrEqual,
+                                $"{WineVarietal.WineVarietalId.RowKey}-"),
+                            TableOperators.And,
+                            TableQuery.GenerateFilterCondition("RowKey",
+                                QueryComparisons.LessThan, $"{WineVarietal.WineVarietalId.RowKey}~")),
+                        TableOperators.And,
+                        TableQuery.GenerateFilterCondition("PartitionKey",
+                            QueryComparisons.Equal, WineVarietal.WineVarietalId.PartitionKey)
+                        )
+                    ))).FirstOrDefault();
+            if (wineVarietalVineyardVarietal != null)
+            {
+                vvd.VineyardPercentage = (wineVarietalVineyardVarietal.VineyardPercentage/100).ToString("P");
+                vvd.VineyardVarietalId = new AzureTableKey()
+                {
+                    RowKey = wineVarietalVineyardVarietal.RowKey.Replace(WineVarietal.WineVarietalId.RowKey, "").Substring(1),
+                    PartitionKey = WineVarietal.WineVarietalId.PartitionKey,
+                    TimeStamp = wineVarietalVineyardVarietal.Timestamp
+                };
+                vvd = await GetVinyardVarietalDetail(vvd);
+                WineVarietal.VineyardDetail = vvd;
+
+
+            }
+            return WineVarietal;
+        }
+
+        private async Task<BottleDetailModel> GetBottleDetailForWineVarietals(BottleDetailModel bottle)
+            {
+                var wineVarietalDetailsList = new List<WineVarietalDetailModel>();
+                var aztWineVarietals = await GetAzureTableWineVarietals(bottle.Color, bottle.EntityKeys.WineId.RowKey);
+                foreach (var aztWineVarietal in aztWineVarietals)
+                {
+                    var aztVarietalKey = aztWineVarietal.RowKey.Substring(aztWineVarietal.RowKey.LastIndexOf("-") + 1);
+                    var wineVarietalDetail = new WineVarietalDetailModel()
+                    {
+                        WineVarietalId = new AzureTableKey() { PartitionKey = aztWineVarietal.PartitionKey, RowKey = aztWineVarietal.RowKey, TimeStamp = aztWineVarietal.Timestamp },
+                        Percentage = aztWineVarietal.Percentage,
+                        VarietalName = await GetAzurTableVarietalName(aztWineVarietal.PartitionKey, aztVarietalKey)
+                    };
+                    wineVarietalDetailsList.Add(wineVarietalDetail);
+                }
+                bottle.VarietalDetails = wineVarietalDetailsList.AsEnumerable();
+                return bottle;
             }
 
-            var aztVineyardVarietalTable = await TableClient.GetTableReference("VineyardVarietal").ExecuteQueryAsync(
+        private async Task<BottleDetailModel> GetBottleDetailsForWineSpec(BottleDetailModel bottle)
+        {
+            var aztWineSpec = await GetAzureTableWineSpec(bottle.EntityKeys.WineId.PartitionKey, bottle.EntityKeys.WineId.RowKey);
+            if (aztWineSpec != null)
+            {
+                bottle.WineVarietalType = aztWineSpec.VarietalType;
+                bottle.Color = aztWineSpec.isRose ? "Rose" : bottle.Color;
+                bottle.isDessert = aztWineSpec.isDessert;
+                bottle.isEstate = aztWineSpec.isEstate;
+                bottle.isRose = aztWineSpec.isRose;
+                bottle.ResSugar = (aztWineSpec.ResSugar / 100).ToString("P");
+                bottle.AlcPercent = (aztWineSpec.AlcPercent / 100).ToString("P");
+                bottle.WineAppellation = aztWineSpec.Appellation;
+            }
+            return bottle;
+        }
+
+        private async Task<VineyardVarietalDetail> GetVinyardVarietalDetail(VineyardVarietalDetail vineyardVarietalDetail)
+        {
+            var vineyardVarietalItem = (await TableClient.GetTableReference("VineyardVarietal").ExecuteQueryAsync(
                     new TableQuery<AzureTableVineyardVarietalModel>().Where(
                             TableQuery.CombineFilters(
-                                aztWineVarietalVineyardVariatleTable[0]
-                                    .RowKey.Replace($"{WineVarietalId.RowKey}-",
-                                    string.Empty),
+                                TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, vineyardVarietalDetail.VineyardVarietalId.RowKey),
                                 TableOperators.And,
-                                TableQuery.GenerateFilterCondition("PartitionKey",
-                                    QueryComparisons.Equal,
-                                    WineVarietalId.PartitionKey))));
+                                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, vineyardVarietalDetail.VineyardVarietalId.PartitionKey)
+                                )))).FirstOrDefault();
 
-
-            if(aztVineyardVarietalTable.Count > 0)
+            if (vineyardVarietalItem != null)
             {
-                vineyardVarietalDetail.CloneName = aztVineyardVarietalTable[0].CloneName;
+                vineyardVarietalDetail.CloneName = vineyardVarietalItem.CloneName;
             }
             else
             {
                 return vineyardVarietalDetail;
             }
 
-            var vineyardEqualCond = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, aztVineyardVarietalTable[0].RowKey.Substring(0, aztVineyardVarietalTable[0].RowKey.IndexOf("-")));
+            var vineyardEqualCond = TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, vineyardVarietalItem.RowKey.Substring(0, vineyardVarietalItem.RowKey.IndexOf("-")));
             var vineyardQuery = new TableQuery<AzureTableVineyardModel>().Where(vineyardEqualCond);
             var aztVineyard = await TableClient.GetTableReference("Vineyard").ExecuteQueryAsync(
-                     new TableQuery<AzureTableVineyardModel>().Where(
-                            TableQuery.CombineFilters(
-                                TableQuery.GenerateFilterCondition("RowKey",
-                                    QueryComparisons.Equal, 
-                                    aztVineyardVarietalTable[0].RowKey.Substring(0,
-                                    aztVineyardVarietalTable[0].RowKey.IndexOf("-"))),
-                                TableOperators.And,
-                                TableQuery.GenerateFilterCondition("PartitionKey",
-                                    QueryComparisons.Equal,
-                                    WineVarietalId.PartitionKey))));
+                        new TableQuery<AzureTableVineyardModel>().Where(
+                            vineyardEqualCond
+                        ));
 
             if(aztVineyard.Count > 0)
             {

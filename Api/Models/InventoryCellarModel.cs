@@ -7,6 +7,8 @@ namespace MyWineDb.Api.Models
     public class InventoryCellarModel
     {
         public string CellarName { get; set; }
+
+        public int BottleCount { get; set; }
         public int Capacity { get; set; }
         public double PctCapacity { get; set; }
         public double CellarTotalValue { get; set; }
