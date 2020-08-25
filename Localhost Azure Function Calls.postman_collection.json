@@ -13,19 +13,7 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "<Your Subscription Key on azure>",
-						"type": "text"
-					},
-					{
-						"key": "Ocp-Apim-Trace",
-						"value": "false",
-						"type": "text",
-						"disabled": true
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": ""
@@ -41,7 +29,8 @@
 						"api",
 						"GetCellars"
 					]
-				}
+				},
+				"description": "Gets the collection of Cellars"
 			},
 			"response": []
 		},
@@ -49,19 +38,7 @@
 			"name": "GetCellarSummaryBottles",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "<your Azure Subscription Key>",
-						"type": "text"
-					},
-					{
-						"key": "Ocp-Apim-Trace",
-						"value": "false",
-						"type": "text",
-						"disabled": true
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\"PartitionKey\":\"<user email address>\",\"RowKey\":\"<Cellar RowKey>\"}"
@@ -77,7 +54,8 @@
 						"api",
 						"GetCellarSummaryBottles"
 					]
-				}
+				},
+				"description": "Gets a summary object for all bottles in the Cellar"
 			},
 			"response": []
 		},
@@ -85,19 +63,7 @@
 			"name": "GetCellarBottleDetails",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "Ocp-Apim-Subscription-Key",
-						"value": "<your Azure Subscription Key>",
-						"type": "text"
-					},
-					{
-						"key": "Ocp-Apim-Trace",
-						"value": "false",
-						"type": "text",
-						"disabled": true
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\"PartitionKey\":\"<email address of user>\",\"RowKey\":\"<Cellar Row Key>-<Winery Row Key>-<key part of Wine RowKey>-<key part of WineBottle RowKey>-<key part of Bottle RowKey>\"}",
@@ -117,6 +83,34 @@
 					"path": [
 						"api",
 						"GetCellarBottleDetails"
+					]
+				},
+				"description": "Gets a detail object for a bottle in a cellar given the proviced Bottle record RowKey"
+			},
+			"response": []
+		},
+		{
+			"name": "GetInventoryReportHtml",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/GetInventoryReportHtml",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"GetInventoryReportHtml"
 					]
 				}
 			},

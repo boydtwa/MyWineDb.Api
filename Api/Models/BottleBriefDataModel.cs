@@ -4,6 +4,7 @@
     {
         public AzureTableKey BottleId;
         public string CountryOfOrigin { get; set; }
+        public string Region { get; set; }
         public string WineryName { get; set; }
         public string WineName { get; set; }
         public string ProductLine { get; set; }
