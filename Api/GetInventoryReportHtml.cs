@@ -57,7 +57,7 @@ namespace MyWineDb.Api
                 report.TotalNumberOfBottles.ToString(), string.Format("{0:0,0.00}", report.AveBottleValue)));
             foreach(var c in report.Cellars)
             {
-                strB.Append(ReportPieces.CellarHeader(c.CellarName, c.Capacity.ToString(), (c.PctCapacity * 100).ToString("P")));
+                strB.Append(ReportPieces.CellarHeader(c.CellarName, c.Capacity.ToString(), c.PctCapacity));
                 foreach(var v in c.Vintages)
                 {
                     strB.Append(ReportPieces.VintageHeader(v.VinetageYear.ToString()));
@@ -91,6 +91,7 @@ namespace MyWineDb.Api
             };
 
             inventoryCellar = await ProcessBottles(inventoryCellar, cellar);
+            inventoryCellar.PctCapacity = inventoryCellar.Capacity == 0 ? "0" : (Convert.ToDouble((inventoryCellar.BottleCount) / Convert.ToDouble(inventoryCellar.Capacity))).ToString("P");
             return inventoryCellar;
         }
 

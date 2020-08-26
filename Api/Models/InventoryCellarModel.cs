@@ -10,7 +10,7 @@ namespace MyWineDb.Api.Models
 
         public int BottleCount { get; set; }
         public int Capacity { get; set; }
-        public double PctCapacity { get; set; }
+        public string PctCapacity { get; set; }
         public double CellarTotalValue { get; set; }
         public IEnumerable<InventoryVintageModel> Vintages { get; set;}
     }
