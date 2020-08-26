@@ -106,7 +106,7 @@ namespace MyWineDb.Api
         {
                return $"<h1>Inventory<span> as of: {DateOfReport}</ span ></ h1><p>Total Value: <span>$ {TotalValue}</span>" +
                         $"<p> Total Number of Bottles: <span>{TotalNumberOfBottles}</span></p>" +            
-                        $"<p>Average Value per Bottle: <span>$ {AverageBottleValue}</span></p>";
+                        $"<p>Average Bottle Value: <span>$ {AverageBottleValue}</span></p>";
         }
 
         public static string CellarHeader(string CellarName, string Capacity, string PctOfCapacity)

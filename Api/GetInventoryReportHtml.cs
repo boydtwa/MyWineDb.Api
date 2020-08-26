@@ -41,6 +41,7 @@ namespace MyWineDb.Api
             {
                 var inventoryCellar = await ProcessCellar(cellar);
                 inventoryCellars.Add(inventoryCellar);
+                cellarBottleCount += cellar.BottleCount;
             }
             report.TotalNumberOfBottles = cellarBottleCount;
             report.CellarsTotalValue = inventoryCellars.Sum(cv => cv.CellarTotalValue);
@@ -172,6 +173,7 @@ namespace MyWineDb.Api
                     }
                     WineItemList.Add(newItem);
                 }
+
                 VintageListItem.WineItems = WineItemList.AsEnumerable();
                 VintageListItem.VinetageValue = WineItemList.Sum(tv => tv.TotalValue);
                 InventoryCellar.Vintages = vintageList.AsEnumerable();
