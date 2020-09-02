@@ -15,7 +15,7 @@ namespace MywineDb.Api
     {
         [FunctionName("GetCellarSummaryBottles")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log, ExecutionContext context)
         {
             log.LogInformation("Processing GetCellarSummaryBottles request");

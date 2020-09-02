@@ -21,7 +21,7 @@ namespace MyWineDb.Api
         private static DataStore CloudData {get; set;}
         [FunctionName("GetInventoryReportHtml")]
         public static async Task<HttpResponseMessage> Run(
-    [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+    [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
     ILogger log, ExecutionContext context)
         {
             log.LogInformation("GetInventoryReportHtml Api Request initiated");

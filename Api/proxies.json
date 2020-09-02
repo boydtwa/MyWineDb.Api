@@ -6,28 +6,28 @@
         "methods": [ "GET" ],
         "route": "/CellarList"
       },
-      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellars?code=%GET_CELLARS_CODE%"
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellars"
     },
     "GetInventoryReportProxy": {
       "matchCondition": {
         "methods": [ "GET" ],
         "route": "/InventoryReport"
       },
-      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetInventoryReportHtml?code=%GET_INVENTORY_CODE%"
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetInventoryReportHtml"
     },
     "GetCellarSummaryBottlesProxy": {
       "matchCondition": {
         "methods": [ "POST" ],
         "route": "/CellarBottleSummaries"
       },
-      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellarSummaryBottles?code=%GET_CELLAR_SUMMARY_BOTTLES_CODE%"
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellarSummaryBottles"
     },
     "GetCellarBottleDetail": {
       "matchCondition": {
         "methods": [ "POST" ],
         "route": "/CellarBottleDetails"
       },
-      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellarBottleDetails?code=%GET_CELLAR_BOTTLE_DETAILS_CODE%"
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellarBottleDetails"
     }
   }
 }
