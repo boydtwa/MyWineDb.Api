@@ -107,8 +107,10 @@ namespace MyWineDb.Api.Services
 
         public async Task<BottleDetailModel> GetCellarBottleDetails(AzureTableKey BottleId)
         {
-            var bottle = new BottleDetailModel();
-            bottle.EntityKeys = new AzureTableEntityKeys() { BottleId = BottleId };
+            var bottle = new BottleDetailModel
+            {
+                EntityKeys = new AzureTableEntityKeys() { BottleId = BottleId }
+            };
             var bottleDetailQuery = new TableQuery<AzureTableBottleModel>().Where(
                 TableQuery.CombineFilters(
                     TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, BottleId.RowKey),

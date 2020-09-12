@@ -8,6 +8,13 @@
       },
       "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellars"
     },
+    "GetCellarBottleTreeProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/CellarBottleTree"
+      },
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetBottleTree"
+    },
     "GetInventoryReportProxy": {
       "matchCondition": {
         "methods": [ "GET" ],
