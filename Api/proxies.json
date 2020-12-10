@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json.schemastore.org/proxies",
+  "proxies": {
+    "GetCellarsProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/CellarList"
+      },
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellars"
+    },
+    "GetCellarBottleTreeProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/CellarBottleTree"
+      },
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetBottleTree"
+    },
+    "GetInventoryReportProxy": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/InventoryReport"
+      },
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetInventoryReportHtml"
+    },
+    "GetCellarSummaryBottlesProxy": {
+      "matchCondition": {
+        "methods": [ "POST" ],
+        "route": "/CellarBottleSummaries"
+      },
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellarSummaryBottles"
+    },
+    "GetCellarBottleDetail": {
+      "matchCondition": {
+        "methods": [ "POST" ],
+        "route": "/CellarBottleDetails"
+      },
+      "backendUri": "https://%API_HOST%.azurewebsites.net/api/GetCellarBottleDetails"
+    }
+  }
+}

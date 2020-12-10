@@ -6,6 +6,7 @@ namespace MyWineDb.Api.Models
 {
     public class VineyardVarietalDetail
     {
+        public AzureTableKey VineyardVarietalId { get; set; }
         public string VineyardName { get; set; }
         public string Region { get; set; }
         public string VineyardAppellation {get; set; }
