@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
@@ -28,80 +29,6 @@ namespace MyWineDb.Api.Services
             TableClient = storeAccount.CreateCloudTableClient();
             log.LogInformation($"AzureApi Connection Established");
         }
-        public async Task<IList<CellarSummaryModel>>GetCellarList()
-        {
-            var cellars = new List<CellarSummaryModel>();
-            var cellarTable = TableClient.GetTableReference("Cellar");
-
-            TableQuery<AzureTableCellarModel> query = new TableQuery<AzureTableCellarModel>();
-            var cellarsBriefDetail = new List<CellarSummaryModel>();
-            var aztCellars = await cellarTable.ExecuteQueryAsync(query);
-            foreach(var aztCellar in aztCellars)
-            {
-                var cellar = new CellarSummaryModel()
-                {
-                    CellarId = new AzureTableKey()
-                    {
-                        RowKey = aztCellar.RowKey,
-                        PartitionKey = aztCellar.PartitionKey,
-                        TimeStamp = aztCellar.Timestamp
-                    },
-                    Name = aztCellar.Name,
-                    Description = aztCellar.Description,
-                    Capacity = aztCellar.Capacity
-                };
-                cellar.BottleCount = await GetCellarBottleCount(cellar.CellarId);
-                cellars.Add(cellar);
-            }
-
-            return cellars;
-        }
-
-        public async Task<IEnumerable<BottleBriefDataModel>> GetCellarSummaryBottles(AzureTableKey CellarId)
-        {
-            var Bottles = new List<BottleBriefDataModel>();
-            var aztBottles = await GetAzureTableBottlesInCellar(CellarId);
-            foreach(var aztBottle in aztBottles)
-            {
-                var bottle = new BottleBriefDataModel()
-                {
-                    BottleId = new AzureTableKey { PartitionKey = aztBottle.PartitionKey, RowKey = aztBottle.RowKey, TimeStamp = aztBottle.Timestamp },
-                    BarCode = aztBottle.BarCode,
-                    PricePaid = aztBottle.PricePaid
-                };
-                var aztWineBottle = await GetAzureTableWineBottle(bottle.BottleId);
-                if (aztWineBottle != null)
-                {
-                    bottle.CountryOfOrigin = aztWineBottle.PartitionKey;
-                    bottle.Size = aztWineBottle.Size;
-                    bottle.RetailPrice = aztWineBottle.RetailPrice;
-                    var aztWine = await GetAzureTableWine(bottle.CountryOfOrigin, aztWineBottle.RowKey);
-                    if (aztWine != null)
-                    {
-                        bottle.WineName = aztWine.Name;
-                        bottle.ProductLine = aztWine.ProductLine;
-                        bottle.Vintage = aztWine.Vintage;
-                        bottle.Color = aztWine.Color;
-                        var aztWineSpec = await GetAzureTableWineSpec(bottle.CountryOfOrigin, aztWine.RowKey);
-                        if(aztWineSpec != null)
-                        {
-                            bottle.VarietalType = aztWineSpec.VarietalType;
-                            bottle.Color = aztWineSpec.isRose ? "Rose" : bottle.Color;
-                            bottle.IsDesert = aztWineSpec.isDessert;
-                            var aztWinery = await GetAzureTableWinery(bottle.CountryOfOrigin, aztWineSpec.RowKey);
-                            if(aztWinery != null)
-                            {
-                                bottle.WineryName = aztWinery.Name;
-                            }
-                        }
-                    }
-                }
-
-                Bottles.Add(bottle);
-            }
-
-            return Bottles.AsEnumerable();
-        }
 
         public async Task<BottleDetailModel> GetCellarBottleDetails(AzureTableKey BottleId)
         {
@@ -118,6 +45,10 @@ namespace MyWineDb.Api.Services
                 bottle.BarCode = aztBottle.BarCode;
                 bottle.PricePaid = aztBottle.PricePaid;
                 bottle.CellarDate = aztBottle.CellarDate;
+            }
+            else
+            {
+                throw new NullReferenceException();
             }
             var aztWineBottle = await GetAzureTableWineBottle(BottleId);
             if (aztBottle != null && aztWineBottle != null)
@@ -194,6 +125,81 @@ namespace MyWineDb.Api.Services
             }
 
             return bottle;
+        }
+
+        public async Task<IList<CellarSummaryModel>>GetCellarList()
+        {
+            var cellars = new List<CellarSummaryModel>();
+            var cellarTable = TableClient.GetTableReference("Cellar");
+
+            TableQuery<AzureTableCellarModel> query = new TableQuery<AzureTableCellarModel>();
+            var cellarsBriefDetail = new List<CellarSummaryModel>();
+            var aztCellars = await cellarTable.ExecuteQueryAsync(query);
+            foreach(var aztCellar in aztCellars)
+            {
+                var cellar = new CellarSummaryModel()
+                {
+                    CellarId = new AzureTableKey()
+                    {
+                        RowKey = aztCellar.RowKey,
+                        PartitionKey = aztCellar.PartitionKey,
+                        TimeStamp = aztCellar.Timestamp
+                    },
+                    Name = aztCellar.Name,
+                    Description = aztCellar.Description,
+                    Capacity = aztCellar.Capacity
+                };
+                cellar.BottleCount = await GetCellarBottleCount(cellar.CellarId);
+                cellars.Add(cellar);
+            }
+
+            return cellars;
+        }
+
+        public async Task<IEnumerable<BottleBriefDataModel>> GetCellarSummaryBottles(AzureTableKey CellarId)
+        {
+            var Bottles = new List<BottleBriefDataModel>();
+            var aztBottles = await GetAzureTableBottlesInCellar(CellarId);
+            foreach(var aztBottle in aztBottles)
+            {
+                var bottle = new BottleBriefDataModel()
+                {
+                    BottleId = new AzureTableKey { PartitionKey = aztBottle.PartitionKey, RowKey = aztBottle.RowKey, TimeStamp = aztBottle.Timestamp },
+                    BarCode = aztBottle.BarCode,
+                    PricePaid = aztBottle.PricePaid
+                };
+                var aztWineBottle = await GetAzureTableWineBottle(bottle.BottleId);
+                if (aztWineBottle != null)
+                {
+                    bottle.CountryOfOrigin = aztWineBottle.PartitionKey;
+                    bottle.Size = aztWineBottle.Size;
+                    bottle.RetailPrice = aztWineBottle.RetailPrice;
+                    var aztWine = await GetAzureTableWine(bottle.CountryOfOrigin, aztWineBottle.RowKey);
+                    if (aztWine != null)
+                    {
+                        bottle.WineName = aztWine.Name;
+                        bottle.ProductLine = aztWine.ProductLine;
+                        bottle.Vintage = aztWine.Vintage;
+                        bottle.Color = aztWine.Color;
+                        var aztWineSpec = await GetAzureTableWineSpec(bottle.CountryOfOrigin, aztWine.RowKey);
+                        if(aztWineSpec != null)
+                        {
+                            bottle.VarietalType = aztWineSpec.VarietalType;
+                            bottle.Color = aztWineSpec.isRose ? "Rose" : bottle.Color;
+                            bottle.IsDesert = aztWineSpec.isDessert;
+                            var aztWinery = await GetAzureTableWinery(bottle.CountryOfOrigin, aztWineSpec.RowKey);
+                            if(aztWinery != null)
+                            {
+                                bottle.WineryName = aztWinery.Name;
+                            }
+                        }
+                    }
+                }
+
+                Bottles.Add(bottle);
+            }
+
+            return Bottles.AsEnumerable();
         }
 
         private async Task<int>GetCellarBottleCount(AzureTableKey CellarId)
