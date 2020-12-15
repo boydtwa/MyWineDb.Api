@@ -38,23 +38,6 @@ namespace MywineDb.Api
                 return new OkObjectResult(JsonConvert.SerializeObject(result));
             log.LogError($"Failed to get bottle detail from DataStore.");
             return new StatusCodeResult(500);
-
-
-
-
-
-
-
-
-            //var result = await dataStore.GetCellarSummaryBottles(key);
-            //if (result.GetType() == typeof(StatusCodeResult))
-            //{
-            //    log.LogError($"Failed to get bottles from DataStore.");
-            //    return (IActionResult)result;
-            //}
-            //var resultStr = JsonConvert.SerializeObject(await dataStore.GetCellarSummaryBottles(key));
-            //log.LogInformation("GetCellarSummaryBottles Api Request completed");
-            //return new OkObjectResult(resultStr);
         }
     }
 }
