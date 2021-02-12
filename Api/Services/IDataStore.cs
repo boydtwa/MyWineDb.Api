@@ -6,8 +6,8 @@ namespace MyWineDb.Api.Services
 {
     public interface IDataStore
     {
-        Task<IList<CellarSummaryModel>> GetCellarList();
-        Task<IEnumerable<BottleBriefDataModel>> GetCellarSummaryBottles(AzureTableKey CellarId);
-        Task<BottleDetailModel> GetCellarBottleDetails(AzureTableKey BottleId);
+        public Task<IList<CellarSummaryModel>> GetCellarList();
+        public Task<IEnumerable<BottleBriefDataModel>> GetCellarSummaryBottles(AzureTableKey CellarId);
+        public Task<BottleDetailModel> GetCellarBottleDetails(AzureTableKey BottleId);
     }
 }

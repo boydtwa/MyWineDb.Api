@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -15,8 +16,8 @@ namespace MywineDb.Api
     {
         [FunctionName("GetCellarSummaryBottles")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
-            ILogger log, ExecutionContext context)
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            ILogger log, ExecutionContext context, IDataStore dataStore = null)
         {
             log.LogInformation("Processing GetCellarSummaryBottles request");
             var stream = req.Body;
@@ -25,21 +26,18 @@ namespace MywineDb.Api
             var key = JsonConvert.DeserializeObject<AzureTableKey>(aztkString);
             if (key == null)
             {
-                log.LogError($"Failed to Retireve Bottles for Azure Table Key provided: {aztkString}");
+                log.LogError($"Failed to Retrieve Bottles for Azure Table Key provided: {aztkString}");
                 return new StatusCodeResult(400);
             }
 
             log.LogInformation("GetCellarSummaryBottles Api Request initiated");
-            var dataStore = new DataStore(log, context);
+            dataStore ??= new DataStore(log, context);
             var result = await dataStore.GetCellarSummaryBottles(key);
-            if (result.GetType() == typeof(StatusCodeResult))
-            {
-                log.LogError($"Failed to get bottles from DataStore.");
-                return (IActionResult)result;
-            }
-            var resultStr = JsonConvert.SerializeObject(await dataStore.GetCellarSummaryBottles(key));
-            log.LogInformation("GetCellarSummaryBottles Api Request completed");
-            return new OkObjectResult(resultStr);
+
+            if (result != null && result.GetType() == typeof(List<BottleBriefDataModel>))
+                return new OkObjectResult(JsonConvert.SerializeObject(result));
+            log.LogError($"Failed to get bottle detail from DataStore.");
+            return new StatusCodeResult(500);
         }
     }
 }
