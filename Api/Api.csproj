@@ -7,6 +7,9 @@
     <UserSecretsId>4ca34e02-0bf8-47d6-8d65-fa16ebd12710</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Cellar.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="ReportSnipits\ReportSnipit1.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
