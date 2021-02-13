@@ -15,8 +15,8 @@ namespace MyWineDb.Api
     {
         [FunctionName("GetCellarBottleDetails")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-            ILogger log, ExecutionContext context, IDataStore dataStore = null)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            ILogger log, ExecutionContext context)
         {
 
             log.LogInformation("Begin GetCellarBottleDetails request");
@@ -32,7 +32,7 @@ namespace MyWineDb.Api
 
             log.LogInformation("GetCellarBottleDetails Api Request initiated");
 
-            dataStore ??= new DataStore(log, context);
+            var dataStore = new DataStore(log, context);
             var result = await dataStore.GetCellarBottleDetails(key);
 
             if (result != null && result.GetType() == typeof(BottleDetailModel))

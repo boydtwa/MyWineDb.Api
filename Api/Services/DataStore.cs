@@ -119,7 +119,7 @@ namespace MyWineDb.Api.Services
             {
                 foreach(var item in wineVarietalDetailsList)
                 {
-                    item.VineyardDetail = await GetVinyardVarietalDetail(item.WineVarietalId);                    
+                    item.VineyardDetail = await GetVineyardVarietalDetail(item.WineVarietalId);                    
                 }
                 bottle.VarietalDetails = wineVarietalDetailsList.AsEnumerable();
             }
@@ -308,10 +308,10 @@ namespace MyWineDb.Api.Services
             return result.Count == 0 ? string.Empty : result.First().Name;
         }
 
-        private async Task<VineyardVarietalDetail> GetVinyardVarietalDetail(AzureTableKey WineVarietalId)
+        private async Task<VineyardVarietalDetail> GetVineyardVarietalDetail(AzureTableKey WineVarietalId)
         {
             var vineyardVarietalDetail = new VineyardVarietalDetail();
-            var aztWineVarietalVineyardVariatleTable = await TableClient.GetTableReference("WineVarietalVineyardVarietal").ExecuteQueryAsync(
+            var aztWineVarietalVineyardVarietalTable = await TableClient.GetTableReference("WineVarietalVineyardVarietal").ExecuteQueryAsync(
                     new TableQuery<AzureTableWineVarietalVineyardVarietalModel>().Where(
                           TableQuery.CombineFilters(
                               TableQuery.CombineFilters(
@@ -323,32 +323,31 @@ namespace MyWineDb.Api.Services
                               TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, WineVarietalId.PartitionKey)
                               )));
 
-            if (aztWineVarietalVineyardVariatleTable.Count > 0)
+            if (aztWineVarietalVineyardVarietalTable.Count > 0)
             {
-                vineyardVarietalDetail.VineyardPercentage = (aztWineVarietalVineyardVariatleTable[0].VineyardPercentage/100).ToString("P");
+                vineyardVarietalDetail.VineyardPercentage = (aztWineVarietalVineyardVarietalTable[0].VineyardPercentage/100).ToString("P");
             }
             else
             {
                 return vineyardVarietalDetail;
             }
 
+            var vvVarietalRowKey = aztWineVarietalVineyardVarietalTable[0].RowKey.Replace($"{WineVarietalId.RowKey}-",string.Empty);
+
             var aztVineyardVarietalTable = await TableClient.GetTableReference("VineyardVarietal").ExecuteQueryAsync(
                     new TableQuery<AzureTableVineyardVarietalModel>().Where(
-                            TableQuery.CombineFilters(
-                                aztWineVarietalVineyardVariatleTable[0]
-                                    .RowKey.Replace($"{WineVarietalId.RowKey}-",
-                                    string.Empty),
+                            TableQuery.CombineFilters(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal,vvVarietalRowKey),
                                 TableOperators.And,
                                 TableQuery.GenerateFilterCondition("PartitionKey",
                                     QueryComparisons.Equal,
                                     WineVarietalId.PartitionKey))));
 
 
-            if(aztVineyardVarietalTable.Count > 0)
+            if(aztVineyardVarietalTable.Count > 0 && aztVineyardVarietalTable[0].CloneName != null)
             {
                 vineyardVarietalDetail.CloneName = aztVineyardVarietalTable[0].CloneName;
             }
-            else
+            else if(aztVineyardVarietalTable.Count==0) 
             {
                 return vineyardVarietalDetail;
             }

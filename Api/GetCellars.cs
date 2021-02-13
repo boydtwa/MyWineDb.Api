@@ -17,12 +17,12 @@ namespace MyWineDb.Api
         
         [FunctionName("GetCellars")]
         public static async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
-        ILogger log, ExecutionContext context, IDataStore dataStore = null)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+        ILogger log, ExecutionContext context)
         {
             log.LogInformation("Begin GetCellars request  ");
 
-            dataStore ??= new DataStore(log, context);
+            var dataStore = new DataStore(log, context);
             log.LogInformation("GetCellars Api Request initiated");
             try
             {
