@@ -18,11 +18,11 @@ namespace MyWineDb.Api.UnitTest
         public async Task Run_FailureToExecuteApiSuccessfully_Returns500Code()
         {
             var ds = TestHelpers.CreateMockDataStore();
-            ds.Setup(s => s.GetCellarList()).Throws(new Exception());
-
+            ds.Setup(s => s.GetCellarList()).Throws<NullReferenceException>();
+            GetCellars.DataStore = ds.Object;
             var sut = await GetCellars.Run(TestHelpers.CreateMockRequest().Object,
                 TestHelpers.CreateMockLogger().Object,
-                TestHelpers.CreateMockExecutionContext().Object, ds.Object);
+                TestHelpers.CreateMockExecutionContext().Object);
             Assert.IsInstanceOf(typeof(StatusCodeResult), sut);
             Assert.AreEqual(500, ((StatusCodeResult)sut).StatusCode);
         }
@@ -32,11 +32,11 @@ namespace MyWineDb.Api.UnitTest
             var ds = TestHelpers.CreateMockDataStore();
             ds.Setup(s => s.GetCellarList())
                 .ReturnsAsync(TestParams.TestExpectedCellarList);
-
+            GetCellars.DataStore = ds.Object;
             var sut = await GetCellars.Run(
                 TestHelpers.CreateMockRequest().Object,
                 TestHelpers.CreateMockLogger().Object,
-                TestHelpers.CreateMockExecutionContext().Object, ds.Object);
+                TestHelpers.CreateMockExecutionContext().Object);
             Assert.IsInstanceOf(typeof(OkObjectResult), sut);
             Assert.IsInstanceOf<List<CellarSummaryModel>>(JsonConvert
                 .DeserializeObject<List<CellarSummaryModel>>(((OkObjectResult) sut).Value.ToString()));

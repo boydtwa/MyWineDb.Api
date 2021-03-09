@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
@@ -14,7 +15,7 @@ namespace MyWineDb.Api.Services
     public class DataStore : IDataStore
     {
         private CloudTableClient TableClient { get; set; }
-        public DataStore(ILogger log, ExecutionContext context)
+        public DataStore(ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
@@ -23,9 +24,9 @@ namespace MyWineDb.Api.Services
                 .Build();
 
             log.LogInformation($"Attempting AzureApi Connection");
-            var constr = config["DbConnectViaKeyVault"];
-            CloudStorageAccount storeAccount =
-                CloudStorageAccount.Parse(constr);
+            var conStr = config["DbConnectViaKeyVault"];
+            var storeAccount =
+                CloudStorageAccount.Parse(conStr);
             TableClient = storeAccount.CreateCloudTableClient();
             log.LogInformation($"AzureApi Connection Established");
         }
